@@ -143,10 +143,8 @@ def exhaustTest(n: int, rand : bool = False, max_gen : int = -1):
                 
                 # Generate new values for a and b
                 a = random.randint(0, 2**n - 1)
-                #print(str(vis_a))
                 while a in vis_a:
                     a = random.randint(0, 2**n - 1)
-                    #print(f"vis_a = {str(vis_a)}, a = {a}")
 
                 b = random.randint(0, 2**n - 1)
                 while b in vis_b:
