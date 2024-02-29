@@ -98,10 +98,10 @@ def runTB(testbench: str, bv_a: list[int], bv_b: list[int], i: int, j: int):
 
         ## Run vcs on this test bench for both designs
         ## and compare the results
-        res_ltl = True
-        res_core = True
-        #res_ltl = runVCSAndParseOutput(vcs_ltl)
-        #res_core = runVCSAndParseOutput(vcs_core)
+        #res_ltl = True
+        #res_core = True
+        res_ltl = runVCSAndParseOutput(vcs_ltl)
+        res_core = runVCSAndParseOutput(vcs_core)
 
         assert res_ltl == res_core, "a = %s\nb = %s\n, n = %d\n HAS FAILED: res_ltl = %s, res_core = %s" % \
             (str(bv_a), str(bv_b), n, str(res_ltl), str(res_core))
@@ -143,10 +143,8 @@ def exhaustTest(n: int, rand : bool = False, max_gen : int = -1):
                 
                 # Generate new values for a and b
                 a = random.randint(0, 2**n - 1)
-                #print(str(vis_a))
                 while a in vis_a:
                     a = random.randint(0, 2**n - 1)
-                    #print(f"vis_a = {str(vis_a)}, a = {a}")
 
                 b = random.randint(0, 2**n - 1)
                 while b in vis_b:
