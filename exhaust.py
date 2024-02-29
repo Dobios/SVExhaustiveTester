@@ -69,13 +69,12 @@ def generateBV(n: int, val: int) -> list[int]:
 ##
 def runVCSAndParseOutput(cmd: str) -> bool:
     # Run vcs
-    result = subprocess.run(cmd.split(' '), stdout=subprocess.PIPE)
-
-    # Parse output
-    res_str = result.stdout.decode('utf-8')
+    cmd1, cmd2 = cmd.split(" && ")
+    result1 = subprocess.run(cmd1.split(' '), stdout=subprocess.PIPE).stdout.decode('utf-8')
+    result2 = subprocess.run(cmd2.split(' '), stdout=subprocess.PIPE).stdout.decode('utf-8')
 
     # Look for lines containing "Offending"
-    for line in res_str.strip('\t').splitlines():
+    for line in result2.strip('\t').splitlines():
         if "Offending" in line.split(' '):
             return False
         
