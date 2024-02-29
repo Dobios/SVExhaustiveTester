@@ -3,8 +3,7 @@ module NOI(	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:2:3
   input  clock,	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:2:21
          reset,	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:2:45
          a,	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:2:61
-         b,	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:2:73
-  output res	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:2:86
+         b // ../firrtl-examples/mlir/loweredbasicnoi.mlir:2:73
 );
 
   reg  hbr = 1'h0;	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:8:12
@@ -25,5 +24,4 @@ module NOI(	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:2:3
   wire _GEN = ~(hbr & ~reset) | ~delay_ | ~_0 | b | reset;	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:8:12, :9:10, :10:10, :11:10, :18:15, :20:11, :21:10, :23:10, :24:11, :25:11, :26:11, :27:11
   always @(posedge clock)	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:28:5
     assert(_GEN);	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:24:11, :25:11, :26:11, :27:11, :29:7
-  assign res = _GEN;	// ../firrtl-examples/mlir/loweredbasicnoi.mlir:24:11, :25:11, :26:11, :27:11, :31:5
 endmodule
