@@ -86,8 +86,8 @@ def runVCSAndParseOutput(cmd: str) -> bool:
 def runTB(testbench: str, bv_a: list[int], bv_b: list[int], i: int, j: int):
     # Write the testbench to a file and run it
     tb_file = "tb/tb_%d_%d.sv" % (i, j)
-    vcs_ltl = "vcs -full64 -q -sverilog -Mupdate -debug_access+all +incdir+./vlog -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' %s %s && ./simv +vcs+lic+wait" % (design_ltl, tb_file)
-    vcs_core = "vcs -full64 -q -sverilog -Mupdate -debug_access+all +incdir+./vlog -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' %s %s && ./simv +vcs+lic+wait" % (design_core, tb_file)
+    vcs_ltl = "vcs -full64 -q -sverilog -Mupdate -debug_access+all +incdir+./vlog -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' %s %s && ./simv +vcs+lic+wait > &1" % (design_ltl, tb_file)
+    vcs_core = "vcs -full64 -q -sverilog -Mupdate -debug_access+all +incdir+./vlog -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' %s %s && ./simv +vcs+lic+wait > &1" % (design_core, tb_file)
 
     if os.path.exists(tb_file):
         os.remove(tb_file)
