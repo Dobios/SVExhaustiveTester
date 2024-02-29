@@ -69,7 +69,7 @@ def generateBV(n: int, val: int) -> list[int]:
 ##
 def runVCSAndParseOutput(cmd: str) -> bool:
     # Run vcs
-    result = subprocess.run([cmd], stdout=subprocess.PIPE)
+    result = subprocess.run(cmd.split(' '), stdout=subprocess.PIPE)
 
     # Parse output
     res_str = result.stdout.decode('utf-8')
@@ -87,8 +87,8 @@ def runVCSAndParseOutput(cmd: str) -> bool:
 def runTB(testbench: str, bv_a: list[int], bv_b: list[int], i: int, j: int):
     # Write the testbench to a file and run it
     tb_file = "tb/tb_%d_%d.sv" % (i, j)
-    vcs_ltl = "vcs -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' '-sverilog' %s %s && ./simv +vcs+lic+wait" % (design_ltl, tb_file)
-    vcs_core = "vcs -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' '-sverilog' %s %s && ./simv +vcs+lic+wait" % (design_core, tb_file)
+    vcs_ltl = "vcs -full64 -q -sverilog -Mupdate -debug_access+all +incdir+./vlog -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' %s %s && ./simv +vcs+lic+wait" % (design_ltl, tb_file)
+    vcs_core = "vcs -full64 -q -sverilog -Mupdate -debug_access+all +incdir+./vlog -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' %s %s && ./simv +vcs+lic+wait" % (design_core, tb_file)
 
     if os.path.exists(tb_file):
         os.remove(tb_file)
@@ -98,10 +98,10 @@ def runTB(testbench: str, bv_a: list[int], bv_b: list[int], i: int, j: int):
 
         ## Run vcs on this test bench for both designs
         ## and compare the results
-        res_ltl = True
-        res_core = True
-        #res_ltl = runVCSAndParseOutput(vcs_ltl)
-        #res_core = runVCSAndParseOutput(vcs_core)
+        #res_ltl = True
+        #res_core = True
+        res_ltl = runVCSAndParseOutput(vcs_ltl)
+        res_core = runVCSAndParseOutput(vcs_core)
 
         assert res_ltl == res_core, "a = %s\nb = %s\n, n = %d\n HAS FAILED: res_ltl = %s, res_core = %s" % \
             (str(bv_a), str(bv_b), n, str(res_ltl), str(res_core))
