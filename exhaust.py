@@ -102,6 +102,7 @@ def runTB(testbench: str, bv_a: list[int], bv_b: list[int], i: int, j: int):
         #res_core = True
         res_ltl = runVCSAndParseOutput(vcs_ltl)
         res_core = runVCSAndParseOutput(vcs_core)
+        print(f"RUNNING A = {str(bv_a)}, b = {str(bv_b)}\n\tRESULT: LTL = {str(res_ltl)}, CORE = {str(res_core)}")
 
         assert res_ltl == res_core, "a = %s\nb = %s\n, n = %d\n HAS FAILED: res_ltl = %s, res_core = %s" % \
             (str(bv_a), str(bv_b), n, str(res_ltl), str(res_core))
