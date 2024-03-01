@@ -3,6 +3,7 @@ import subprocess
 from tqdm import tqdm
 import random
 import sys
+import stat
 from BitVector import BitVector
 
 design_ltl = "designs/noiltl.sv"
@@ -69,12 +70,10 @@ def generateBV(n: int, val: int) -> list[int]:
 ##
 def runVCSAndParseOutput(cmd: str) -> bool:
     # Run vcs
-    cmd1, cmd2 = cmd.split(" && ")
-    result1 = subprocess.run(cmd1.split(' '), stdout=subprocess.PIPE).stdout.decode('utf-8')
-    result2 = subprocess.run(cmd2.split(' '), stdout=subprocess.PIPE).stdout.decode('utf-8')
+    result = subprocess.run(cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
 
     # Look for lines containing "Offending"
-    for line in result2.strip('\t').splitlines():
+    for line in result.strip('\t').splitlines():
         if "Offending" in line.split(' '):
             return False
         
@@ -86,11 +85,26 @@ def runVCSAndParseOutput(cmd: str) -> bool:
 def runTB(testbench: str, bv_a: list[int], bv_b: list[int], i: int, j: int):
     # Write the testbench to a file and run it
     tb_file = "tb/tb_%d_%d.sv" % (i, j)
-    vcs_ltl = "vcs -full64 -q -sverilog -Mupdate -debug_access+all +incdir+./vlog -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' %s %s && ./simv +vcs+lic+wait > &1" % (design_ltl, tb_file)
-    vcs_core = "vcs -full64 -q -sverilog -Mupdate -debug_access+all +incdir+./vlog -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' %s %s && ./simv +vcs+lic+wait > &1" % (design_core, tb_file)
+    vcs_ltl = "vcs -full64 -q -sverilog -Mupdate -debug_access+all +incdir+./vlog -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' %s %s && ./simv +vcs+lic+wait >&1" % (design_ltl, tb_file)
+    vcs_core = "vcs -full64 -q -sverilog -Mupdate -debug_access+all +incdir+./vlog -licqueue '-timescale=1ns/1ns' '+vcs+flush+all' '+warn=all' %s %s && ./simv +vcs+lic+wait >&1" % (design_core, tb_file)
+    
+    run_ltl = "./run_ltl.sh"
+    run_core = "./run_core.sh"
+
+    with open(run_ltl, "w+") as r:
+        r.write("#!/bin/sh\n")
+        r.write(vcs_ltl)
+
+    with open(run_core, "w+") as r:
+        r.write("#!/bin/sh\n")
+        r.write(vcs_core)
+
+    os.system(f"chmod +x {run_core}")
+    os.system(f"chmod +x {run_ltl}")
 
     if os.path.exists(tb_file):
         os.remove(tb_file)
+
 
     with open(tb_file, "x+") as tb:
         tb.write(testbench)
@@ -99,8 +113,8 @@ def runTB(testbench: str, bv_a: list[int], bv_b: list[int], i: int, j: int):
         ## and compare the results
         #res_ltl = True
         #res_core = True
-        res_ltl = runVCSAndParseOutput(vcs_ltl)
-        res_core = runVCSAndParseOutput(vcs_core)
+        res_ltl = runVCSAndParseOutput(run_ltl)
+        res_core = runVCSAndParseOutput(run_core)
         print(f"RUNNING A = {str(bv_a)}, b = {str(bv_b)}\n\tRESULT: LTL = {str(res_ltl)}, CORE = {str(res_core)}")
 
         assert res_ltl == res_core, "a = %s\nb = %s\n, n = %d\n HAS FAILED: res_ltl = %s, res_core = %s" % \
