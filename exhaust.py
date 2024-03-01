@@ -91,6 +91,12 @@ def runTB(testbench: str, bv_a: list[int], bv_b: list[int], i: int, j: int):
     run_ltl = "./run_ltl.sh"
     run_core = "./run_core.sh"
 
+    if not os.path.exists(run_ltl):
+        os.system(f"touch {run_ltl}")
+
+    if not os.path.exists(run_core):
+        os.system(f"touch {run_core}")
+
     with open(run_ltl, "w+") as r:
         r.write("#!/bin/sh\n")
         r.write(vcs_ltl)
